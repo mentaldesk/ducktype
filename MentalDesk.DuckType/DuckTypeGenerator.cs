@@ -11,6 +11,11 @@ public class DuckTypeGenerator : IIncrementalGenerator
 {
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
+        // Add the marker attribute to the compilation
+        context.RegisterPostInitializationOutput(ctx => ctx.AddSource(
+            "DuckTypeAttribute.g.cs", 
+            SourceText.From(SourceGenerationHelper.Attribute, Encoding.UTF8)));
+        
         // Do a simple filter for enums
         IncrementalValuesProvider<TypeToGenerate?> typesToGenerate = context.SyntaxProvider
             .CreateSyntaxProvider(
@@ -37,27 +42,24 @@ public class DuckTypeGenerator : IIncrementalGenerator
     static TypeToGenerate? GetSemanticTargetForGeneration(GeneratorSyntaxContext context)
     {
         // we know the node is a ClassDeclarationSyntax thanks to IsSyntaxTargetForGeneration
-        var declarationSyntax = (ClassDeclarationSyntax)context.Node;
+        var classDeclaration = (ClassDeclarationSyntax)context.Node;
 
         // loop through all the attributes on the method
-        foreach (AttributeListSyntax attributeListSyntax in declarationSyntax.AttributeLists)
+        foreach (AttributeListSyntax attributeListSyntax in classDeclaration.AttributeLists)
         {
             foreach (AttributeSyntax attributeSyntax in attributeListSyntax.Attributes)
             {
                 if (context.SemanticModel.GetSymbolInfo(attributeSyntax).Symbol is not IMethodSymbol attributeSymbol)
                 {
-                    // weird, we couldn't get the symbol, ignore it
                     continue;
                 }
 
-                INamedTypeSymbol attributeContainingTypeSymbol = attributeSymbol.ContainingType;
-                string fullName = attributeContainingTypeSymbol.ToDisplayString();
+                INamedTypeSymbol containingAttribute = attributeSymbol.ContainingType;
+                string fullName = containingAttribute.OriginalDefinition.ToDisplayString();
 
-                // Is the attribute the [EnumExtensions] attribute?
-                if (fullName == "MentalDesk.DuckType.DuckTypeAttribute")
+                if (fullName == "MentalDesk.DuckType.DuckTypeAttribute<TClass, TInterface>")
                 {
-                    // return the enum. Implementation shown in section 7.
-                    return GetTypeToGenerate(context.SemanticModel, declarationSyntax);
+                    return GetTypeToGenerate(context, classDeclaration, containingAttribute);
                 }
             }
         }
@@ -66,17 +68,18 @@ public class DuckTypeGenerator : IIncrementalGenerator
         return null;
     }     
     
-    static TypeToGenerate? GetTypeToGenerate(SemanticModel semanticModel, SyntaxNode declarationSyntax)
+    static TypeToGenerate? GetTypeToGenerate(GeneratorSyntaxContext context, SyntaxNode classDeclaration, INamedTypeSymbol containingAttribute)
     {
         // Get the semantic representation of the class syntax
-        if (semanticModel.GetDeclaredSymbol(declarationSyntax) is not INamedTypeSymbol classSymbol)
+        SemanticModel semanticModel = context.SemanticModel;
+        if (semanticModel.GetDeclaredSymbol(classDeclaration) is not INamedTypeSymbol classSymbol)
         {
             // something went wrong
             return null;
         }
 
         // Get the full type name of the class
-        string className = classSymbol.ToString();
+        string? className = classSymbol.ToString();
 
         // Get all the members in the enum
         ImmutableArray<ISymbol> classMembers = classSymbol.GetMembers();

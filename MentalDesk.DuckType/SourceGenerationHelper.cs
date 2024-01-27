@@ -10,16 +10,23 @@ public static class SourceGenerationHelper
         sb.Append(@"
 namespace MentalDesk.DuckType
 {
-    public partial class DogAnimal(Dog instance) : IAnimal
+    public static partial class EnumExtensions
     {");
         sb.Append(@"
-        private readonly Dog _instance = instance;
+            public static string ToStringFast(this ").Append(typeToGenerate.Name).Append(@" value)
+                => value switch
+                {");
+        foreach (var member in typeToGenerate.Members)
+        {
+            sb.Append(@"
+            ").Append(typeToGenerate.Name).Append('.').Append(member)
+                .Append(" => nameof(")
+                .Append(typeToGenerate.Name).Append('.').Append(member).Append("),");
+        }
 
-        public static implicit operator DogAnimal(Dog dog) => new(dog);
-        public static implicit operator Dog(DogAnimal dogAnimal) => dogAnimal._instance;
-
-        public int NumberOfLegs => _instance.NumberOfLegs;
-        public string Sound => _instance.Sound;
+        sb.Append(@"
+                _ => value.ToString(),
+            };
 ");
     
         sb.Append(@"
@@ -27,5 +34,14 @@ namespace MentalDesk.DuckType
 }");
 
         return sb.ToString();
-    }        
+    }
+
+    public const string Attribute = @"
+namespace MentalDesk.DuckType
+{
+    [System.AttributeUsage(System.AttributeTargets.Enum)]
+    public class DuckTypeAttribute<TClass, TInterface> : System.Attribute
+    {
+    }
+}";    
 }
