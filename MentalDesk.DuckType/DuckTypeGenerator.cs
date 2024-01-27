@@ -80,7 +80,9 @@ public class DuckTypeGenerator : IIncrementalGenerator
 
         // Get the full type name of the class
         var classAccessibility = classSymbol.DeclaredAccessibility.ToString().ToLowerInvariant();
-        var className = classSymbol.ToString()!;
+        var className = classSymbol.ToDisplayString();
+        var classToWrap = containingAttribute.TypeArguments[0].ToDisplayString();
+        var interfaceToApply = containingAttribute.TypeArguments[1].ToDisplayString();
 
         // Get all the members in the enum
         var classMembers = classSymbol.GetMembers();
@@ -103,7 +105,7 @@ public class DuckTypeGenerator : IIncrementalGenerator
             }
         }
 
-        return new TypeToGenerate(classAccessibility, className, members);
+        return new TypeToGenerate(classAccessibility, className, classToWrap, interfaceToApply, members);
     }
 
     static void Execute(TypeToGenerate? typeToGenerate, SourceProductionContext context)
