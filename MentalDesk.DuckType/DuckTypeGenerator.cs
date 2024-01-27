@@ -68,10 +68,10 @@ public class DuckTypeGenerator : IIncrementalGenerator
         return null;
     }     
     
-    static TypeToGenerate? GetTypeToGenerate(GeneratorSyntaxContext context, SyntaxNode classDeclaration, INamedTypeSymbol containingAttribute)
+    static TypeToGenerate? GetTypeToGenerate(GeneratorSyntaxContext context, ClassDeclarationSyntax classDeclaration, INamedTypeSymbol containingAttribute)
     {
         // Get the semantic representation of the class syntax
-        SemanticModel semanticModel = context.SemanticModel;
+        var semanticModel = context.SemanticModel;
         if (semanticModel.GetDeclaredSymbol(classDeclaration) is not INamedTypeSymbol classSymbol)
         {
             // something went wrong
@@ -79,10 +79,11 @@ public class DuckTypeGenerator : IIncrementalGenerator
         }
 
         // Get the full type name of the class
-        string? className = classSymbol.ToString();
+        var classAccessibility = classSymbol.DeclaredAccessibility.ToString().ToLowerInvariant();
+        var className = classSymbol.ToString()!;
 
         // Get all the members in the enum
-        ImmutableArray<ISymbol> classMembers = classSymbol.GetMembers();
+        var classMembers = classSymbol.GetMembers();
         var members = new List<string>(classMembers.Length);
 
         // Get all the fields from the enum, and add their name to the list
@@ -102,7 +103,7 @@ public class DuckTypeGenerator : IIncrementalGenerator
             }
         }
 
-        return new TypeToGenerate(className, members);
+        return new TypeToGenerate(classAccessibility, className, members);
     }
 
     static void Execute(TypeToGenerate? typeToGenerate, SourceProductionContext context)
@@ -112,7 +113,7 @@ public class DuckTypeGenerator : IIncrementalGenerator
             // generate the source code and add it to the output
             string result = SourceGenerationHelper.GenerateExtensionClass(value);
             // Create a separate partial class file for each enum
-            context.AddSource($"DuckType.{value.Name}.g.cs", SourceText.From(result, Encoding.UTF8));
+            context.AddSource($"DuckType.{value.ClassName}.g.cs", SourceText.From(result, Encoding.UTF8));
         }
     }
 }

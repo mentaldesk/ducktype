@@ -1,7 +1,8 @@
 namespace MentalDesk.DuckType;
 
-public readonly record struct TypeToGenerate(string Name, List<string> Members)
+public readonly record struct TypeToGenerate(string classAccessibility, string ClassName, List<string> Members)
 {
-    public readonly string Name = Name;
+    public string ClassAccessibility { get; init; } = classAccessibility;
+    public readonly string ClassName = ClassName;
     public readonly List<string> Members = Members;
 }

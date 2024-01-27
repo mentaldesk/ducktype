@@ -6,34 +6,38 @@ public static class SourceGenerationHelper
 {
     public static string GenerateExtensionClass(TypeToGenerate typeToGenerate)
     {
+        var className = typeToGenerate.ClassName;
+        var classVariableName = className.ToCamelCase();
+        
         var sb = new StringBuilder();
-        sb.Append(@"
+        sb.Append($@"
 namespace MentalDesk.DuckType
-{
-    public static partial class EnumExtensions
-    {");
-        sb.Append(@"
-            public static string ToStringFast(this ").Append(typeToGenerate.Name).Append(@" value)
-                => value switch
-                {");
-        foreach (var member in typeToGenerate.Members)
-        {
-            sb.Append(@"
-            ").Append(typeToGenerate.Name).Append('.').Append(member)
-                .Append(" => nameof(")
-                .Append(typeToGenerate.Name).Append('.').Append(member).Append("),");
-        }
+{{
+    { typeToGenerate.ClassAccessibility } partial class { className }(Dog instance) : IAnimal
+    {{");
+        sb.Append($@"
+        private readonly Dog _instance = instance;
 
-        sb.Append(@"
-                _ => value.ToString(),
-            };
+        public static implicit operator { className }(Dog dog) => new(dog);
+        public static implicit operator Dog({ className } { classVariableName }) => {classVariableName }._instance;
+
+        public int NumberOfLegs => _instance.NumberOfLegs;
+        public string Sound => _instance.Sound;
 ");
     
         sb.Append(@"
     }
 }");
-
         return sb.ToString();
+    }
+    
+    public static string ToCamelCase(this string value)
+    {
+        if (string.IsNullOrEmpty(value))
+        {
+            return value;
+        }
+        return value[..1].ToLower() + value[1..];
     }
 
     public const string Attribute = @"
