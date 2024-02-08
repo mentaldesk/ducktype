@@ -16,7 +16,7 @@ public class DuckTypeGenerator : IIncrementalGenerator
             "DuckTypeAttribute.g.cs", 
             SourceText.From(SourceGenerationHelper.Attribute, Encoding.UTF8)));
         
-        // Do a simple filter for enums
+        // Do a simple filter for classes
         IncrementalValuesProvider<TypeToGenerate?> typesToGenerate = context.SyntaxProvider
             .CreateSyntaxProvider(
                 predicate: static (s, _) => IsSyntaxTargetForGeneration(s), // select classes with attributes
@@ -79,6 +79,7 @@ public class DuckTypeGenerator : IIncrementalGenerator
         }
 
         // Get the full type name of the partial class we're building
+        var nameSpace = classSymbol.ContainingNamespace.IsGlobalNamespace ? string.Empty : classSymbol.ContainingNamespace.ToString();
         var classAccessibility = classSymbol.DeclaredAccessibility.ToString().ToLowerInvariant();
         var className = classSymbol.ToDisplayString();
         
@@ -97,6 +98,7 @@ public class DuckTypeGenerator : IIncrementalGenerator
         var memberNames = interfaceToApply.MemberNames;
 
         return new TypeToGenerate(
+            nameSpace,
             classAccessibility, 
             className, 
             classToWrap, 

@@ -9,6 +9,8 @@ public class DuckTypeGeneratorSnapshotTests
         var source = @"
 using MentalDesk.DuckType;
 
+namespace Test;
+
 public interface IAnimal
 {
     public int NumberOfLegs { get; set; }

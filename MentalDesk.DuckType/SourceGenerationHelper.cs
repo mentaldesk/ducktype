@@ -14,9 +14,13 @@ public static class SourceGenerationHelper
         var interfaceName = typeToGenerate.InterfaceToApply.Name;
         
         var sb = new StringBuilder();
+        if (!string.IsNullOrEmpty(typeToGenerate.Namespace))
+        {
+            sb.Append($@"
+namespace {typeToGenerate.Namespace}
+{{");
+        }
         sb.Append($@"
-namespace MentalDesk.DuckType
-{{
     { typeToGenerate.ClassAccessibility } partial class { className }({ classToWrap } instance) : { interfaceName }
     {{");
         sb.Append($@"
@@ -67,10 +71,16 @@ namespace MentalDesk.DuckType
                 }
             }
         }
-    
+
         sb.Append(@"
-    }
+    }");
+
+        if (!string.IsNullOrEmpty(typeToGenerate.Namespace))
+        {
+            sb.Append(@"
 }");
+        }
+
         return sb.ToString();
     }
     
@@ -86,7 +96,7 @@ namespace MentalDesk.DuckType
     public const string Attribute = @"
 namespace MentalDesk.DuckType
 {
-    [System.AttributeUsage(System.AttributeTargets.Enum)]
+    [System.AttributeUsage(System.AttributeTargets.Class)]
     public class DuckTypeAttribute<TClass, TInterface> : System.Attribute
     {
     }

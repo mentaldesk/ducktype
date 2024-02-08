@@ -1,6 +1,5 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
-using System.Text.Json.Serialization;
 using MentalDesk.DuckType;
 using Sample;
 
@@ -22,25 +21,20 @@ namespace Sample
     public partial class DogAnimal {}
 
     
-    public partial class DogAnimal(Dog instance) : IAnimal
-    {
-        private readonly Dog _instance = instance;
-    
-        public static implicit operator DogAnimal(Dog dog) => new(dog);
-        public static implicit operator Dog(DogAnimal dogAnimal) => dogAnimal._instance;
-
-        public int NumberOfLegs
-        {
-            get => _instance.NumberOfLegs;
-            set => instance.NumberOfLegs = value;
-        } 
-        public string Sound => _instance.Sound;
-        public void MakeSound(string sound) => _instance.MakeSound(sound);
-    }
-    //
-    // [System.AttributeUsage(System.AttributeTargets.Class)]
-    // public class DuckTypeAttribute(Type ClassType, Type InterfaceType) : System.Attribute
+    // public partial class DogAnimal(Dog instance) : IAnimal
     // {
+    //     private readonly Dog _instance = instance;
+    //
+    //     public static implicit operator DogAnimal(Dog dog) => new(dog);
+    //     public static implicit operator Dog(DogAnimal dogAnimal) => dogAnimal._instance;
+    //
+    //     public int NumberOfLegs
+    //     {
+    //         get => _instance.NumberOfLegs;
+    //         set => instance.NumberOfLegs = value;
+    //     } 
+    //     public string Sound => _instance.Sound;
+    //     public void MakeSound(string sound) => _instance.MakeSound(sound);
     // }
 }
 
