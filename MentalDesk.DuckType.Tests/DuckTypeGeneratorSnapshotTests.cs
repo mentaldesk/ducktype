@@ -11,13 +11,13 @@ using MentalDesk.DuckType;
 
 public interface IAnimal
 {
-    public int NumberOfLegs { get; }
+    public int NumberOfLegs { get; set; }
     public string Sound { get; }
 }
 
 public class Dog
 {
-    public int NumberOfLegs => 4;
+    public int NumberOfLegs { get; set; } = 4;
     public string Sound => ""Woof"";
 }
 

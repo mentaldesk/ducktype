@@ -35,6 +35,7 @@ namespace Sample
             set => instance.NumberOfLegs = value;
         } 
         public string Sound => _instance.Sound;
+        public void MakeSound(string sound) => _instance.MakeSound(sound);
     }
     //
     // [System.AttributeUsage(System.AttributeTargets.Class)]

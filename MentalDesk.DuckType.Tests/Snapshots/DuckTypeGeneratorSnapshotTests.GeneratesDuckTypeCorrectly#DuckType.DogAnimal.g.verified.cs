@@ -9,7 +9,11 @@ namespace MentalDesk.DuckType
         public static implicit operator DogAnimal(Dog dog) => new(dog);
         public static implicit operator Dog(DogAnimal dogAnimal) => dogAnimal._instance;
 
-        public int NumberOfLegs => _instance.NumberOfLegs;
+        public int NumberOfLegs
+        {
+            get => _instance.NumberOfLegs;
+            set => instance.NumberOfLegs = value;
+        }
         public string Sound => _instance.Sound;
     }
 }
