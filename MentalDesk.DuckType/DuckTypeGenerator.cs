@@ -78,34 +78,32 @@ public class DuckTypeGenerator : IIncrementalGenerator
             return null;
         }
 
-        // Get the full type name of the class
+        // Get the full type name of the partial class we're building
         var classAccessibility = classSymbol.DeclaredAccessibility.ToString().ToLowerInvariant();
         var className = classSymbol.ToDisplayString();
+        
+        // Get details of the Class Type parameter
         var classToWrap = containingAttribute.TypeArguments[0].ToDisplayString();
-        var interfaceToApply = containingAttribute.TypeArguments[1].ToDisplayString();
-
-        // Get all the members in the enum
-        var classMembers = classSymbol.GetMembers();
-        var members = new List<string>(classMembers.Length);
-
-        // Get all the fields from the enum, and add their name to the list
-        foreach (ISymbol member in classMembers)
+        
+        // Get details of the Interface Type parameter
+        var interfaceSymbol = containingAttribute.TypeArguments[1];
+        if (interfaceSymbol is not INamedTypeSymbol interfaceToApply)
         {
-            if (member is IFieldSymbol { ConstantValue: not null })
-            {
-                members.Add(member.Name);
-            }
+            return null;
         }
 
-        foreach (var member in classMembers)
-        {
-            if (member is IFieldSymbol { ConstantValue: not null })
-            {
-                members.Add(member.Name);
-            }
-        }
+        // Get all the members in the interface
+        var classMembers = interfaceToApply.GetMembers();
+        var memberNames = interfaceToApply.MemberNames;
 
-        return new TypeToGenerate(classAccessibility, className, classToWrap, interfaceToApply, members);
+        return new TypeToGenerate(
+            classAccessibility, 
+            className, 
+            classToWrap, 
+            interfaceToApply, 
+            classMembers, 
+            memberNames.ToImmutableArray()
+            );
     }
 
     static void Execute(TypeToGenerate? typeToGenerate, SourceProductionContext context)
