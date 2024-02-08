@@ -9,6 +9,8 @@
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <!-- DuckType is a design time tool only -->
         <IncludeBuildOutput>false</IncludeBuildOutput>
+        <Version>0.0.4</Version>
+        <Authors>James Crosswell</Authors>
     </PropertyGroup>
 
     <ItemGroup>

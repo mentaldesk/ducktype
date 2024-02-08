@@ -21,13 +21,19 @@ namespace {typeToGenerate.Namespace}
 {{");
         }
         sb.Append($@"
-    { typeToGenerate.ClassAccessibility } partial class { className }({ classToWrap } instance) : { interfaceName }
+    { typeToGenerate.ClassAccessibility } partial class { className } : { interfaceName }
     {{");
         sb.Append($@"
-        private readonly { classToWrap } _instance = instance;
+        public { className }({ classToWrap } instance)
+        {{
+            _instance = instance;
+        }}     
+        ");
+        sb.Append($@"
+        private readonly { classToWrap } _instance;
 
         public static implicit operator { className }({ classToWrap } { classToWrapVariable }) => new({ classToWrapVariable });
-        public static implicit operator Dog({ className } { classNameVariable }) => {classNameVariable }._instance;
+        public static implicit operator { classToWrap }({ className } { classNameVariable }) => {classNameVariable }._instance;
 ");
 
         // Implement all the properties from the interface
@@ -45,7 +51,7 @@ namespace {typeToGenerate.Namespace}
         { propertyAccessibility } { propertyType } { propertyName }
         {{
             get => _instance.{ propertyName };
-            set => instance.{ propertyName } = value;
+            set => _instance.{ propertyName } = value;
         }}");
                     break;
                 }
@@ -65,8 +71,10 @@ namespace {typeToGenerate.Namespace}
                     var methodName = method.Name;
                     var parameters = method.Parameters.Select(x => $"{x.Type.ToDisplayString()} {x.Name}").ToArray();
                     var parameterList = string.Join(", ", parameters);
+                    var args = method.Parameters.Select(x => $"{x.Name}").ToArray();
+                    var argList = string.Join(", ", args);
                     sb.Append($@"
-        { methodAccessibility } { returnType } { methodName }({ parameterList }) => _instance.{ methodName }({ parameterList });");
+        { methodAccessibility } { returnType } { methodName }({ parameterList }) => _instance.{ methodName }({ argList });");
                     break;
                 }
             }

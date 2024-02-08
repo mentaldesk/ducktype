@@ -81,10 +81,10 @@ public class DuckTypeGenerator : IIncrementalGenerator
         // Get the full type name of the partial class we're building
         var nameSpace = classSymbol.ContainingNamespace.IsGlobalNamespace ? string.Empty : classSymbol.ContainingNamespace.ToString();
         var classAccessibility = classSymbol.DeclaredAccessibility.ToString().ToLowerInvariant();
-        var className = classSymbol.ToDisplayString();
+        var className = classSymbol.MetadataName;
         
         // Get details of the Class Type parameter
-        var classToWrap = containingAttribute.TypeArguments[0].ToDisplayString();
+        var classToWrap = containingAttribute.TypeArguments[0].MetadataName;
         
         // Get details of the Interface Type parameter
         var interfaceSymbol = containingAttribute.TypeArguments[1];
