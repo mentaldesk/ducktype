@@ -83,6 +83,14 @@ namespace {typeToGenerate.Namespace}
         sb.Append(@"
     }");
 
+        // Tack on an extension method for the class we're wrapping
+        sb.Append($@"
+
+    public static class { className }Extensions
+    {{
+        public static { interfaceName } As{ interfaceName }(this { classToWrap } x) => new { className }(x);
+    }}");
+        
         if (!string.IsNullOrEmpty(typeToGenerate.Namespace))
         {
             sb.Append(@"

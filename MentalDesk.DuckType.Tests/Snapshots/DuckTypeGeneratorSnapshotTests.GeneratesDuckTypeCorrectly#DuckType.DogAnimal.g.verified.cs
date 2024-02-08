@@ -22,4 +22,9 @@ namespace Test
         public string Sound => _instance.Sound;
         public void MakeSound(string sound) => _instance.MakeSound(sound);
     }
+
+    public static class DogAnimalExtensions
+    {
+        public static IAnimal AsIAnimal(this Dog x) => new DogAnimal(x);
+    }
 }
