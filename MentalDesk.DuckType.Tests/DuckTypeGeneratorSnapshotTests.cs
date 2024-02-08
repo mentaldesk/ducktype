@@ -13,12 +13,14 @@ public interface IAnimal
 {
     public int NumberOfLegs { get; set; }
     public string Sound { get; }
+    public void MakeSound(string sound);
 }
 
 public class Dog
 {
     public int NumberOfLegs { get; set; } = 4;
     public string Sound => ""Woof"";
+    public void MakeSound(string _) => Console.WriteLine(Sound);
 }
 
 [DuckType<Dog, IAnimal>()]

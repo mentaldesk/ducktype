@@ -15,5 +15,6 @@ namespace MentalDesk.DuckType
             set => instance.NumberOfLegs = value;
         }
         public string Sound => _instance.Sound;
+        public void MakeSound(string sound) => _instance.MakeSound(string sound);
     }
 }

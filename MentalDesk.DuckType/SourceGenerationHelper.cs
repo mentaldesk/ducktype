@@ -54,11 +54,19 @@ namespace MentalDesk.DuckType
         { propertyAccessibility } { propertyType } { propertyName } => _instance.{ propertyName };");
                     break;
                 }
+                case IMethodSymbol method:
+                {
+                    var methodAccessibility = method.DeclaredAccessibility.ToString().ToLowerInvariant();
+                    var returnType = method.ReturnType.ToDisplayString();
+                    var methodName = method.Name;
+                    var parameters = method.Parameters.Select(x => $"{x.Type.ToDisplayString()} {x.Name}").ToArray();
+                    var parameterList = string.Join(", ", parameters);
+                    sb.Append($@"
+        { methodAccessibility } { returnType } { methodName }({ parameterList }) => _instance.{ methodName }({ parameterList });");
+                    break;
+                }
             }
         }
-        
-        // public int NumberOfLegs => _instance.NumberOfLegs;
-        // public string Sound => _instance.Sound;
     
         sb.Append(@"
     }
