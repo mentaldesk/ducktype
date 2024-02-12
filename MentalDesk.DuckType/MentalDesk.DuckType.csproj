@@ -1,17 +1,55 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <Description>
+            A duck typing library for C# that allows you treat any object as if it implements any interface, so long as 
+            it has all the members of that interface.
+        </Description>
         <TargetFramework>net7.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
-        <Nullable>enable</Nullable>
         <LangVersion>12</LangVersion>
         <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <!-- DuckType is a design time tool only -->
         <IncludeBuildOutput>false</IncludeBuildOutput>
-        <Version>0.9.0</Version>
+
+        <Version>1.0.0</Version>
         <Authors>James Crosswell</Authors>
+
+        <PackageId>MentalDesk.DuckType</PackageId>
+        <PackageTags>mentaldesk;utilities;dotnet;dynamic-programming;duck-typing</PackageTags>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
+
+        <RepositoryType>git</RepositoryType>
+        <RepositoryRoot>$(MSBuildThisFileDirectory)</RepositoryRoot>
+        <RepositoryUrl>https://github.com/mentaldesk/ducktype</RepositoryUrl>
+
+        <!--
+          SourceLink configuration
+          See https://github.com/dotnet/sourcelink/blob/main/README.md
+          And https://learn.microsoft.com/dotnet/core/project-sdk/msbuild-props
+        -->
+        <PublishRepositoryUrl>true</PublishRepositoryUrl>
+        <IncludeSymbols>true</IncludeSymbols>
+        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+        <EmbedUntrackedSources>true</EmbedUntrackedSources>
+        <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
+
+        <!-- See https://learn.microsoft.com/en-us/dotnet/csharp/nullable-references#nullable-contexts -->
+        <Nullable>enable</Nullable>
     </PropertyGroup>
+
+    <ItemGroup>
+        <None Include="$(MSBuildThisFileDirectory)..\README.md" Pack="true" PackagePath="" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Content Include="..\README.md">
+            <Link>README.md</Link>
+        </Content>
+    </ItemGroup>
 
     <ItemGroup>
         <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.8.0" PrivateAssets="all" />
