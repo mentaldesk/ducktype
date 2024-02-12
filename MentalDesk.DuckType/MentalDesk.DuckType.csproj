@@ -26,17 +26,6 @@
         <RepositoryRoot>$(MSBuildThisFileDirectory)</RepositoryRoot>
         <RepositoryUrl>https://github.com/mentaldesk/ducktype</RepositoryUrl>
 
-        <!--
-          SourceLink configuration
-          See https://github.com/dotnet/sourcelink/blob/main/README.md
-          And https://learn.microsoft.com/dotnet/core/project-sdk/msbuild-props
-        -->
-        <PublishRepositoryUrl>true</PublishRepositoryUrl>
-        <IncludeSymbols>true</IncludeSymbols>
-        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
-        <EmbedUntrackedSources>true</EmbedUntrackedSources>
-        <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
-
         <!-- See https://learn.microsoft.com/en-us/dotnet/csharp/nullable-references#nullable-contexts -->
         <Nullable>enable</Nullable>
     </PropertyGroup>

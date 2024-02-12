@@ -1,11 +1,18 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# 
+#
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MentalDesk.DuckType", "MentalDesk.DuckType\MentalDesk.DuckType.csproj", "{416AF316-1236-48A4-ACF1-1867DE660B57}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sample", "Sample\Sample.csproj", "{D9E22C44-0E6F-4C92-9A21-B2C71444EA00}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MentalDesk.DuckType.Tests", "MentalDesk.DuckType.Tests\MentalDesk.DuckType.Tests.csproj", "{20BD887D-1C65-45A5-A6DE-39D655BD4E70}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".root", ".root", "{11FA8B80-258B-450D-AC5F-679A37AE75E7}"
+	ProjectSection(SolutionItems) = preProject
+		CHANGELOG.md = CHANGELOG.md
+		LICENSE = LICENSE
+		README.md = README.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
