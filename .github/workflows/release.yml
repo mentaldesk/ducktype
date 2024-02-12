@@ -1,0 +1,36 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Version to release
+        required: true
+      force:
+        description: Force a release even when there are release-blockers (optional)
+        required: false
+         
+jobs:
+  build:
+    env:
+      SOLUTION: 'MentalDesk.DuckType.sln'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check out current commit (${{ github.sha }})
+        uses: actions/checkout@v3
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: |
+            7.0.x
+      - name: Restore dependencies
+        run: dotnet restore $SOLUTION
+      - name: Build
+        run: dotnet build --configuration Release /p:Version=${{ github.event.inputs.version }} --no-restore
+      - name: Test
+        run: dotnet test --configuration Release /p:Version=${{ github.event.inputs.version }} --no-restore --no-build --verbosity normal
+      - name: Package
+        run: dotnet pack --configuration Release /p:Version=${{ github.event.inputs.version }} --no-restore --no-build --output .
+      - name: Push to NuGet
+        run: dotnet nuget push "*.nupkg" --api-key ${{secrets.nuget_api_key}} --source https://api.nuget.org/v3/index.json --skip-duplicate
