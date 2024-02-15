@@ -1,45 +1,10 @@
-﻿// See https://aka.ms/new-console-template for more information
-
-using MentalDesk.DuckType;
+﻿using MentalDesk.DuckType;
 using Sample;
 
-var dogType = typeof(Dog);
-Console.WriteLine($"{dogType.Name}");
-
-DogAnimal dog = new Dog();
-var animals = new IAnimal[]{dog};
-
-foreach (var animal in animals)
-{
-    Console.WriteLine($"The {animals.GetType().Name} says {animal.Sound}");
-}
-
-
-namespace Sample
-{
-    [DuckType<Dog, IAnimal>()]
-    public partial class DogAnimal {}
-
-    
-    public partial class DogAnimal : IAnimal
-    {
-        public DogAnimal(Dog instance)
-        {
-            _instance = instance;
-        }
-        
-        private readonly Dog _instance;
-    
-        public static implicit operator DogAnimal(Dog dog) => new(dog);
-        public static implicit operator Dog(DogAnimal dogAnimal) => dogAnimal._instance;
-    
-        public int NumberOfLegs
-        {
-            get => _instance.NumberOfLegs;
-            set => _instance.NumberOfLegs = value;
-        } 
-        public string Sound => _instance.Sound;
-        public void MakeSound(string sound) => _instance.MakeSound(sound);
-    }
-}
-
+var dog = new Dog();
+var duck = new Duck();
+// foreach (var VARIABLE in [dog.AsIAnimal(), duck.AsIAni])
+// {
+//     
+// }
+Console.WriteLine($"The duck says:");

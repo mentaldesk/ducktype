@@ -17,11 +17,13 @@ public static class SourceGenerationHelper
         if (!string.IsNullOrEmpty(typeToGenerate.Namespace))
         {
             sb.Append($@"
-namespace {typeToGenerate.Namespace}
+using {typeToGenerate.Namespace};
+
+namespace MentalDesk.DuckType
 {{");
         }
         sb.Append($@"
-    { typeToGenerate.ClassAccessibility } partial class { className } : { interfaceName }
+    internal class { className } : { interfaceName }
     {{");
         sb.Append($@"
         public { className }({ classToWrap } instance)
@@ -108,12 +110,15 @@ namespace {typeToGenerate.Namespace}
         }
         return value[..1].ToLower() + value[1..];
     }
+    
+    public static string WithoutI(this string interfaceName) 
+        => interfaceName.StartsWith("I") ? interfaceName[1..] : interfaceName;
 
     public const string Attribute = @"
 namespace MentalDesk.DuckType
 {
-    [System.AttributeUsage(System.AttributeTargets.Class)]
-    public class DuckTypeAttribute<TClass, TInterface> : System.Attribute
+    [System.AttributeUsage(System.AttributeTargets.Assembly)]
+    public sealed class DuckTypeAttribute<TClass, TInterface> : System.Attribute
     {
     }
 }";    

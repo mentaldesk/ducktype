@@ -14,7 +14,7 @@
         <!-- DuckType is a design time tool only -->
         <IncludeBuildOutput>false</IncludeBuildOutput>
 
-        <Version>1.0.0</Version>
+        <Version>2.0.0</Version>
         <Authors>James Crosswell</Authors>
 
         <PackageId>MentalDesk.DuckType</PackageId>

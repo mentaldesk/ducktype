@@ -8,6 +8,9 @@ public class DuckTypeGeneratorSnapshotTests
         // The source code to test
         var source = @"
 using MentalDesk.DuckType;
+using Test;
+
+[assembly: DuckType<Dog, IAnimal>]
 
 namespace Test;
 
