@@ -2,8 +2,8 @@
 
 namespace MentalDesk.DuckType
 {
-    [System.AttributeUsage(System.AttributeTargets.Class)]
-    public class DuckTypeAttribute<TClass, TInterface> : System.Attribute
+    [System.AttributeUsage(System.AttributeTargets.Assembly, AllowMultiple=true)]
+    public sealed class DuckTypeAttribute<TClass, TInterface> : System.Attribute
     {
     }
 }

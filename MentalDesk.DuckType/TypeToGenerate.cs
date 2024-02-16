@@ -5,7 +5,6 @@ namespace MentalDesk.DuckType;
 
 public readonly record struct TypeToGenerate(
     string? Namespace,
-    string ClassAccessibility, 
     string ClassName,
     string ClassToWrap, 
     INamedTypeSymbol InterfaceToApply,

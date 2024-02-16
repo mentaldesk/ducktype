@@ -1,45 +1,37 @@
-﻿// See https://aka.ms/new-console-template for more information
+﻿// // These would normally go in an AssemblyInfo.cs file but to make the sample
+// // simpler to read/navigate, we've put them here. They're just marker attributes
+// // to trigger our source generators. 
+// [assembly: DuckType<Dog, IAnimal>]
+// [assembly: DuckType<Duck, IAnimal>]
 
-using MentalDesk.DuckType;
-using Sample;
+// Note that neither of these classes implements IAnimal
+var dog = new Dog();
+var duck = new Duck();
 
-var dogType = typeof(Dog);
-Console.WriteLine($"{dogType.Name}");
+// // But we can use the AsIAnimal extension method to treat them as if they
+// // do because they both have all the methods and properties of IAnimal.
+// IAnimal[] animals = [dog.AsIAnimal(), duck.AsIAnimal()];
 
-DogAnimal dog = new Dog();
-var animals = new IAnimal[]{dog};
+// // And now we can 
+// foreach (var critter in animals)
+// {
+//     // Have a look at the type of critter in your debugger... you'll see the
+//     // generated class that implements IAnimal and wraps the original critter
+//     // in it's warm blanket of type camouflage.
+//     critter.MakeSound();
+// }
 
-foreach (var animal in animals)
+public interface IAnimal
 {
-    Console.WriteLine($"The {animals.GetType().Name} says {animal.Sound}");
+    public void MakeSound();
 }
 
-
-namespace Sample
+public class Duck
 {
-    [DuckType<Dog, IAnimal>()]
-    public partial class DogAnimal {}
-
-    
-    public partial class DogAnimal : IAnimal
-    {
-        public DogAnimal(Dog instance)
-        {
-            _instance = instance;
-        }
-        
-        private readonly Dog _instance;
-    
-        public static implicit operator DogAnimal(Dog dog) => new(dog);
-        public static implicit operator Dog(DogAnimal dogAnimal) => dogAnimal._instance;
-    
-        public int NumberOfLegs
-        {
-            get => _instance.NumberOfLegs;
-            set => _instance.NumberOfLegs = value;
-        } 
-        public string Sound => _instance.Sound;
-        public void MakeSound(string sound) => _instance.MakeSound(sound);
-    }
+    public void MakeSound() => Console.WriteLine("Quack");
 }
 
+public class Dog
+{
+    public void MakeSound() => Console.WriteLine("Woof");
+}

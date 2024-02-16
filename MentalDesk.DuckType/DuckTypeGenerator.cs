@@ -23,44 +23,35 @@ public class DuckTypeGenerator : IIncrementalGenerator
                 transform: static (ctx, _) => GetSemanticTargetForGeneration(ctx)) // select classes with the [DuckTypeAttribute] attribute and extract details
             .Where(static m => m is not null); // Filter out errors that we don't care about
 
-        // If you're targeting the .NET 7 SDK, use this version instead:
-        // IncrementalValuesProvider<TypeToGenerate?> typesToGenerate = context.SyntaxProvider
-        //     .ForAttributeWithMetadataName(
-        //         "MentalDesk.DuckType.DuckTypeAttribute",
-        //         predicate: static (s, _) => true,
-        //         transform: static (ctx, _) => GetTypeToGenerate(ctx.SemanticModel, ctx.TargetNode))
-        //     .Where(static m => m is not null);
-
         // Generate source code for each enum found
         context.RegisterSourceOutput(typesToGenerate,
             static (spc, source) => Execute(source, spc));
     } 
 
     static bool IsSyntaxTargetForGeneration(SyntaxNode node)
-        => node is ClassDeclarationSyntax { AttributeLists.Count: > 0 };
+        => node is AttributeListSyntax { Parent: CompilationUnitSyntax };
+        // => node is CompilationUnitSyntax cus 
+        //    && cus.ChildNodes().Any(sn => sn is AttributeListSyntax als && als.Parent == cus);
     
     static TypeToGenerate? GetSemanticTargetForGeneration(GeneratorSyntaxContext context)
     {
         // we know the node is a ClassDeclarationSyntax thanks to IsSyntaxTargetForGeneration
-        var classDeclaration = (ClassDeclarationSyntax)context.Node;
+        var attributeListSyntax = (AttributeListSyntax)context.Node;
 
         // loop through all the attributes on the method
-        foreach (AttributeListSyntax attributeListSyntax in classDeclaration.AttributeLists)
+        foreach (AttributeSyntax attributeSyntax in attributeListSyntax.Attributes)
         {
-            foreach (AttributeSyntax attributeSyntax in attributeListSyntax.Attributes)
+            if (context.SemanticModel.GetSymbolInfo(attributeSyntax).Symbol is not IMethodSymbol attributeSymbol)
             {
-                if (context.SemanticModel.GetSymbolInfo(attributeSyntax).Symbol is not IMethodSymbol attributeSymbol)
-                {
-                    continue;
-                }
+                continue;
+            }
 
-                INamedTypeSymbol containingAttribute = attributeSymbol.ContainingType;
-                string fullName = containingAttribute.OriginalDefinition.ToDisplayString();
+            INamedTypeSymbol containingAttribute = attributeSymbol.ContainingType;
+            string fullName = containingAttribute.OriginalDefinition.ToDisplayString();
 
-                if (fullName == "MentalDesk.DuckType.DuckTypeAttribute<TClass, TInterface>")
-                {
-                    return GetTypeToGenerate(context, classDeclaration, containingAttribute);
-                }
+            if (fullName == "MentalDesk.DuckType.DuckTypeAttribute<TClass, TInterface>")
+            {
+                return GetTypeToGenerate(containingAttribute);
             }
         }
 
@@ -68,41 +59,37 @@ public class DuckTypeGenerator : IIncrementalGenerator
         return null;
     }     
     
-    static TypeToGenerate? GetTypeToGenerate(GeneratorSyntaxContext context, ClassDeclarationSyntax classDeclaration, INamedTypeSymbol containingAttribute)
+    static TypeToGenerate? GetTypeToGenerate(INamedTypeSymbol containingAttribute)
     {
-        // Get the semantic representation of the class syntax
-        var semanticModel = context.SemanticModel;
-        if (semanticModel.GetDeclaredSymbol(classDeclaration) is not INamedTypeSymbol classSymbol)
+        // Get details of the Class Type parameter
+        var classTypeArgument = containingAttribute.TypeArguments[0];
+        if (classTypeArgument is not INamedTypeSymbol classSymbol)
         {
-            // something went wrong
+            return null;
+        }
+        var classToWrap = classTypeArgument.MetadataName;
+        
+        // Get details of the Interface Type parameter
+        var interfaceTypeArgument = containingAttribute.TypeArguments[1];
+        if (interfaceTypeArgument is not INamedTypeSymbol interfaceSymbol)
+        {
             return null;
         }
 
         // Get the full type name of the partial class we're building
         var nameSpace = classSymbol.ContainingNamespace.IsGlobalNamespace ? string.Empty : classSymbol.ContainingNamespace.ToString();
-        var classAccessibility = classSymbol.DeclaredAccessibility.ToString().ToLowerInvariant();
-        var className = classSymbol.MetadataName;
+        var className = $"{ classSymbol.MetadataName }{ interfaceSymbol.MetadataName.WithoutI() }";
         
-        // Get details of the Class Type parameter
-        var classToWrap = containingAttribute.TypeArguments[0].MetadataName;
-        
-        // Get details of the Interface Type parameter
-        var interfaceSymbol = containingAttribute.TypeArguments[1];
-        if (interfaceSymbol is not INamedTypeSymbol interfaceToApply)
-        {
-            return null;
-        }
 
         // Get all the members in the interface
-        var classMembers = interfaceToApply.GetMembers();
-        var memberNames = interfaceToApply.MemberNames;
+        var classMembers = interfaceSymbol.GetMembers();
+        var memberNames = interfaceSymbol.MemberNames;
 
         return new TypeToGenerate(
             nameSpace,
-            classAccessibility, 
             className, 
             classToWrap, 
-            interfaceToApply, 
+            interfaceSymbol, 
             classMembers, 
             memberNames.ToImmutableArray()
             );

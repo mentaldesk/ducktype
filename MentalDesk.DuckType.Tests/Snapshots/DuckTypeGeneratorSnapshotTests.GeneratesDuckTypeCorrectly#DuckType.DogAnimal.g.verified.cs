@@ -1,8 +1,10 @@
 ﻿//HintName: DuckType.DogAnimal.g.cs
 
-namespace Test
+using Test;
+
+namespace MentalDesk.DuckType
 {
-    public partial class DogAnimal : IAnimal
+    internal class DogAnimal : IAnimal
     {
         public DogAnimal(Dog instance)
         {
