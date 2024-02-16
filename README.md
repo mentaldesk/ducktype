@@ -33,9 +33,14 @@ class Derek
 {
     public void Quack() => Console.WriteLine("quack...");
 }
+
+public interface IDuck
+{
+    public void Quack();
+}
 ```
 
-They can both clearly quack, and you want to be able to do something like this:
+Derek and Duck can both clearly quack, and you want to be able to do something like this:
 
 ```csharp   
 var duck = new Duck();
@@ -46,27 +51,14 @@ foreach (var d in [duck, derek]) // <-- this wont compile
 }
 ```
 
-Using `MentalDesk.DuckType` you can add a couple of partial classes to your project like so:
+Using `MentalDesk.DuckType` you can add a couple of assembly attributes to your project:
 
 ```csharp
-public interface IDuck
-{
-    public void Quack();
-}
-
-[DuckType<Duck, IDuck>]
-partial class DuckDuck : IDuck
-{
-}
-
-[DuckType<Derek, IDuck>]
-partial class DerekDuck : IDuck
-{
-}
+[assembly: DuckType<Duck, IDuck>]
+[assembly: DuckType<Derek, IDuck>]
 ```
 
-Each of the partial classes is decorated with a `DuckType<TClass, TInterface>` attribute, which triggers the duck typing
-source generators.
+These `DuckType<TClass, TInterface>` attributes will trigger the duck typing source generators.
 
 And then you can do this:
 

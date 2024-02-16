@@ -29,31 +29,29 @@ public class DuckTypeGenerator : IIncrementalGenerator
     } 
 
     static bool IsSyntaxTargetForGeneration(SyntaxNode node)
-        => node is CompilationUnitSyntax cus 
-           && cus.ChildNodes().Any(sn => sn is AttributeListSyntax als && als.Parent == cus);
+        => node is AttributeListSyntax { Parent: CompilationUnitSyntax };
+        // => node is CompilationUnitSyntax cus 
+        //    && cus.ChildNodes().Any(sn => sn is AttributeListSyntax als && als.Parent == cus);
     
     static TypeToGenerate? GetSemanticTargetForGeneration(GeneratorSyntaxContext context)
     {
         // we know the node is a ClassDeclarationSyntax thanks to IsSyntaxTargetForGeneration
-        var cus = (CompilationUnitSyntax)context.Node;
+        var attributeListSyntax = (AttributeListSyntax)context.Node;
 
         // loop through all the attributes on the method
-        foreach (AttributeListSyntax attributeListSyntax in cus.AttributeLists)
+        foreach (AttributeSyntax attributeSyntax in attributeListSyntax.Attributes)
         {
-            foreach (AttributeSyntax attributeSyntax in attributeListSyntax.Attributes)
+            if (context.SemanticModel.GetSymbolInfo(attributeSyntax).Symbol is not IMethodSymbol attributeSymbol)
             {
-                if (context.SemanticModel.GetSymbolInfo(attributeSyntax).Symbol is not IMethodSymbol attributeSymbol)
-                {
-                    continue;
-                }
+                continue;
+            }
 
-                INamedTypeSymbol containingAttribute = attributeSymbol.ContainingType;
-                string fullName = containingAttribute.OriginalDefinition.ToDisplayString();
+            INamedTypeSymbol containingAttribute = attributeSymbol.ContainingType;
+            string fullName = containingAttribute.OriginalDefinition.ToDisplayString();
 
-                if (fullName == "MentalDesk.DuckType.DuckTypeAttribute<TClass, TInterface>")
-                {
-                    return GetTypeToGenerate(context, cus, containingAttribute);
-                }
+            if (fullName == "MentalDesk.DuckType.DuckTypeAttribute<TClass, TInterface>")
+            {
+                return GetTypeToGenerate(containingAttribute);
             }
         }
 
@@ -61,7 +59,7 @@ public class DuckTypeGenerator : IIncrementalGenerator
         return null;
     }     
     
-    static TypeToGenerate? GetTypeToGenerate(GeneratorSyntaxContext context, CompilationUnitSyntax classDeclaration, INamedTypeSymbol containingAttribute)
+    static TypeToGenerate? GetTypeToGenerate(INamedTypeSymbol containingAttribute)
     {
         // Get details of the Class Type parameter
         var classTypeArgument = containingAttribute.TypeArguments[0];

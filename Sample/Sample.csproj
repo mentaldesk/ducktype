@@ -8,7 +8,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="MentalDesk.DuckType" Version="2.0.1" />
+      <PackageReference Include="MentalDesk.DuckType" Version="2.0.2" />
     </ItemGroup>
 
 </Project>

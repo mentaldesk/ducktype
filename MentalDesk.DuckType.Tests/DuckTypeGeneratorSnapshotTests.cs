@@ -11,6 +11,7 @@ using MentalDesk.DuckType;
 using Test;
 
 [assembly: DuckType<Dog, IAnimal>]
+[assembly: DuckType<Duck, IAnimal>]
 
 namespace Test;
 
@@ -28,9 +29,11 @@ public class Dog
     public void MakeSound(string _) => Console.WriteLine(Sound);
 }
 
-[DuckType<Dog, IAnimal>()]
-public partial class DogAnimal
+public class Duck
 {
+    public int NumberOfLegs { get; set; } = 2;
+    public string Sound => ""Quack"";
+    public void MakeSound(string _) => Console.WriteLine(Sound);
 }
 ";
 
