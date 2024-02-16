@@ -8,4 +8,8 @@
         <IsPackable>false</IsPackable>
     </PropertyGroup>
 
+    <ItemGroup>
+      <PackageReference Include="MentalDesk.DuckType" Version="2.0.0" />
+    </ItemGroup>
+
 </Project>
